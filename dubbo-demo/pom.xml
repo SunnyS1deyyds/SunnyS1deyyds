@@ -11,6 +11,9 @@
 
     <modules>
         <module>user-server</module>
+        <module>user-provider</module>
+        <module>user-consumer</module>
+        <module>user-api</module>
     </modules>
 
     <parent>

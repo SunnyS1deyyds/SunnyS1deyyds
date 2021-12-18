@@ -8,8 +8,18 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    nacos:
+      server-addr: 192.168.200.188:8848
 logging:
-  level: 
+  level:
     cn.itcast: debug
   pattern:
     dateformat: HH:mm:ss:SSS
+
+dubbo: #配置dubbo  配置注册中心
+  registry:
+    address: spring-cloud://192.168.200.188
+  consumer:
+    check: false
+    retries: 0

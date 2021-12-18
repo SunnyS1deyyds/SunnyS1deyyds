@@ -2,12 +2,14 @@ package cn.itcast.user.service.impl;
 
 
 import cn.itcast.dubbo.pojo.User;
+import cn.itcast.user.api.UserService;
 import cn.itcast.user.mapper.UserMapper;
-import cn.itcast.user.service.UserService;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
+@DubboService
 public class UserServiceImpl implements UserService {
 
     @Autowired

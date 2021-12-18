@@ -1,0 +1,20 @@
+server:
+  port: 18081
+spring:
+  application:
+    name: user-consumer
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+
+dubbo: #配置dubbo
+  registry:
+    address: nacos://192.168.200.188:8848
+  consumer:
+    check: false
+    version: 2.0
+    retries: 0
+    timeout: 5000
+    loadbalance: roundrobin

@@ -1,27 +1,25 @@
 server:
-  port: 8081
+  port: 18080
 spring:
-  application:
-    name: user-service
   datasource:
     url: jdbc:mysql://192.168.200.188:3306/dubbo-demo?useSSL=false
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
-  cloud:
-    nacos:
-      server-addr: 192.168.200.188:8848 # 配置nacos的地址
+  application:
+    name: user-provider
 logging:
   level:
     cn.itcast: debug
   pattern:
     dateformat: HH:mm:ss:SSS
 
-dubbo: #Dubbo配置   协议   注册中心   Dubbo服务包扫描
+dubbo: #配置Dubbo  配置Dubbo协议   配置注册中心  配置包扫描(需要创建哪些Dubbo服务)
   protocol:
     name: dubbo
     port: 20881
   registry:
-    address: spring-cloud://192.168.200.188 #设置使用SpringCloud的注册中心
+    address: nacos://192.168.200.188:8848
   scan:
     base-packages: cn.itcast.user.service
+
