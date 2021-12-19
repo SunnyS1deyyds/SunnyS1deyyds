@@ -1,0 +1,29 @@
+server:
+  port: 18081
+spring:
+  application:
+    name: tanhua-dubbo-db
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.200.188:3306/tanhua?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false
+    username: root
+    password: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.200.188:8848
+
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix: tb_   # 表名前缀
+      id-type: auto   # id策略为自增长
+
+dubbo: #配置dubbo  协议  注册中心  包扫描
+  protocol:
+    name: dubbo
+    port: 20881
+  registry:
+    address: spring-cloud://192.168.200.188
+  scan:
+    base-packages: com.tanhua.dubbo.api

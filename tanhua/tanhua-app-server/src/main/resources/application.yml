@@ -1,0 +1,26 @@
+server:
+  port: 18080
+spring:
+  application:
+    name: tanhua-app-server
+  redis: #redis配置
+    port: 6379
+    host: 192.168.200.188
+  cloud: #nacos配置
+    nacos:
+      discovery:
+        server-addr: 192.168.200.188:8848
+
+dubbo:
+  registry:
+    address: spring-cloud://192.168.200.188
+  consumer:
+    check: false
+    retries: 0
+
+tanhua:
+  sms:
+    accessKeyId: LTAI5tFz3fQcYuD3SQbsUY1G
+    accessKeySecret: 1OMqoyjTEKaeMawX88f1ErJ8doI5I4
+    signName: Tree
+    templateCode: SMS_137670376
