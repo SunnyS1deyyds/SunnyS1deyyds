@@ -11,6 +11,7 @@
 
     <artifactId>tanhua-dubbo</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>tanhua-dubbo-interface</module>
         <module>tanhua-dubbo-db</module>
