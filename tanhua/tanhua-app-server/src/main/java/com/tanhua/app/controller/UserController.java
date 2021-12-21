@@ -1,14 +1,17 @@
 package com.tanhua.app.controller;
 
 import cn.hutool.http.HttpStatus;
+import com.itheima.model.pojo.UserInfo;
+import com.tanhua.app.service.UserInfoService;
 import com.tanhua.app.service.UserService;
+import com.tanhua.commons.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.POST;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -17,6 +20,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     //01 登录---获取验证码
     //POST/user/login
@@ -50,4 +56,56 @@ public class UserController {
         //3. 返回结果
         return ResponseEntity.ok(reMap);
     }
+
+    //03 首次登录---完善资料
+    //POST/user/loginReginfo
+
+    @PostMapping("/loginReginfo")
+    public ResponseEntity loginReginfo(@RequestBody UserInfo userInfo,
+                                       @RequestHeader("Authorization") String token) {
+        //1 校验token，验证用户登录是否合法
+        boolean verifyToken = JwtUtils.verifyToken(token);
+
+        //2 如果token校验失败，直接返回401
+        if (!verifyToken) {
+            return ResponseEntity.status(HttpStatus.HTTP_UNAUTHORIZED).body(null);
+        }
+
+        //3 如果token校验成功，从token中获取id，设置到UserInfo中
+        Long id = Long.parseLong(JwtUtils.getClaims(token).get("id").toString());
+        userInfo.setId(id);
+
+        //4 使用Service进行处理
+        userInfoService.save(userInfo);
+
+        //返回结果
+        return ResponseEntity.ok(null);
+    }
+
+    //04 首次登录---补充头像
+    //POST/user/loginReginfo/head
+    @PostMapping("/loginReginfo/head")
+    public ResponseEntity head(MultipartFile headPhoto,
+                               @RequestHeader("Authorization") String token) throws IOException {
+
+        //1 校验token，验证用户登录是否合法
+        boolean verifyToken = JwtUtils.verifyToken(token);
+
+        //2 如果token校验失败，直接返回401
+        if (!verifyToken) {
+            return ResponseEntity.status(HttpStatus.HTTP_UNAUTHORIZED).body(null);
+        }
+
+        //3 如果token校验成功，从token中获取id，设置到UserInfo中
+        Long id = Long.parseLong(JwtUtils.getClaims(token).get("id").toString());
+
+
+        //4 使用UserInfoService 实现图片上传的功能
+        userInfoService.upload(headPhoto, id);
+
+        //5 返回结果
+        return ResponseEntity.ok(null);
+    }
+
+
 }

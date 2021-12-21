@@ -21,9 +21,10 @@ public class JwtUtils {
     private static final int TOKEN_TIME_OUT = 7 * 24 * 3600;
 
     /**
-     * 加密KEY
+     * 加密KEY,尽量复杂，不要有意义
      */
     private static final String TOKEN_SECRET = "itcast";
+    //private static final String TOKEN_SECRET = "QhH^b81j7KjUYN@clCECuvE^U!HL0j";
 
 
     /**

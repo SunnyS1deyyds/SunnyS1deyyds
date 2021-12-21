@@ -24,3 +24,13 @@ tanhua:
     accessKeySecret: 1OMqoyjTEKaeMawX88f1ErJ8doI5I4
     signName: Tree
     templateCode: SMS_137670376
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    accessKeyId: LTAI5tFz3fQcYuD3SQbsUY1G
+    accessKeySecret: 1OMqoyjTEKaeMawX88f1ErJ8doI5I4
+    bucket: xuzy-tanhua-test
+    url: https://xuzy-tanhua-test.oss-cn-beijing.aliyuncs.com/
+  aip:
+    appId: 25384207
+    apiKey: 64anEHUyNwtY9dwr9tpQFDem
+    secretKey: Vrro5EW3WS8paEpCsYSHw6CiYNF93Sn5
