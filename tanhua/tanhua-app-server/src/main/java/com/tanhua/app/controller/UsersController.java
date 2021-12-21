@@ -56,16 +56,17 @@ public class UsersController {
     @PutMapping
     public ResponseEntity updateById(@RequestBody UserInfo userInfo,
                                      @RequestHeader("Authorization") String token) {
-        //1 校验token，验证用户登录是否合法
-        boolean verifyToken = JwtUtils.verifyToken(token);
-
-        //2 如果token校验失败，直接返回401
-        if (!verifyToken) {
-            return ResponseEntity.status(HttpStatus.HTTP_UNAUTHORIZED).body(null);
-        }
-
-        //3 如果token校验成功，从token中获取id，设置到UserInfo中
-        Long id = Long.parseLong(JwtUtils.getClaims(token).get("id").toString());
+        ////1 校验token，验证用户登录是否合法
+        //boolean verifyToken = JwtUtils.verifyToken(token);
+        //
+        ////2 如果token校验失败，直接返回401
+        //if (!verifyToken) {
+        //    return ResponseEntity.status(HttpStatus.HTTP_UNAUTHORIZED).body(null);
+        //}
+        //
+        ////3 如果token校验成功，从token中获取id，设置到UserInfo中
+        //Long id = Long.parseLong(JwtUtils.getClaims(token).get("id").toString());
+        Long id = UserHolder.getUserId();
         userInfo.setId(id);
 
         //4 使用Service实现修改功能
