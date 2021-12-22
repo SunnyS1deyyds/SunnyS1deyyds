@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns("/user/login", "/user/loginVerification");
+                .addPathPatterns("/**")//拦截所有的请求   都需要进行用户鉴权
+                .excludePathPatterns("/user/login", "/user/loginVerification");//登录接口放行，不鉴权
     }
 }

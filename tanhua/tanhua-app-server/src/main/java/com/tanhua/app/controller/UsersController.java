@@ -2,15 +2,22 @@ package com.tanhua.app.controller;
 
 import cn.hutool.http.HttpStatus;
 import com.itheima.model.pojo.UserInfo;
+import com.itheima.model.vo.PageResult;
+import com.itheima.model.vo.SettingsVo;
 import com.itheima.model.vo.UserInfoVo;
 import com.tanhua.app.interceptor.UserHolder;
+import com.tanhua.app.service.SettingsService;
 import com.tanhua.app.service.UserInfoService;
 import com.tanhua.commons.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -18,6 +25,9 @@ public class UsersController {
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private SettingsService settingsService;
 
 
     //用户资料 - 读取
@@ -75,4 +85,63 @@ public class UsersController {
         //返回结果
         return ResponseEntity.ok(null);
     }
+
+    //用户通用设置 - 读取
+    //GET/users/settings
+    @GetMapping("/settings")
+    public ResponseEntity settings() {
+        //调用SettingsService执行查询功能
+        SettingsVo vo = settingsService.findSettings();
+
+        //构建返回数据
+        return ResponseEntity.ok(vo);
+    }
+
+    //设置陌生人问题 - 保存
+    //POST/users/questions
+    @PostMapping("/questions")
+    public ResponseEntity questions(@RequestBody Map<String, String> params) {
+        //1. 获取陌生人问题
+        String content = params.get("content");
+
+        //2. 调用Service进行处理
+        settingsService.saveQuestions(content);
+
+        //3. 构建返回结果数据
+        return ResponseEntity.ok(null);
+    }
+
+    //通知设置 - 保存
+    //POST/users/notifications/setting
+    @PostMapping("/notifications/setting")
+    public ResponseEntity notifications(@RequestBody Map<String, Boolean> params) {
+        // 1. 调用Service进行保存操作
+        settingsService.saveNotifications(params);
+        // 2. 返回结果
+        return ResponseEntity.ok(null);
+    }
+
+    //黑名单 - 翻页列表
+    //GET/users/blacklist
+    @GetMapping("/blacklist")
+    public ResponseEntity blacklist(@RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "10") int pagesize) {
+        //1. 使用Service进行查询，返回vo对象 PageResult
+        PageResult pageResult = settingsService.findBlacklist(page, pagesize);
+
+        //2. 返回结果
+        return ResponseEntity.ok(pageResult);
+    }
+
+    //黑名单 - 移除
+    //DELETE/users/blacklist/:uid
+    @DeleteMapping("/blacklist/{uid}")
+    public ResponseEntity removeBlacklist(@PathVariable Long uid) {
+        //调用Service实现功能
+        settingsService.removeBlacklist(uid);
+
+        //返回结果
+        return ResponseEntity.ok(null);
+    }
+
 }
