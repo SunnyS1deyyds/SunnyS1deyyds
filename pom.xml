@@ -13,7 +13,7 @@
 <!--        <module>dubbo-demo</module>-->
 <!--        <module>cloud-dubbo-demo</module>-->
         <module>tanhua</module>
-        <module>tanhua-mongo-demo</module>
+<!--        <module>tanhua-mongo-demo</module>-->
     </modules>
 
     <properties>
