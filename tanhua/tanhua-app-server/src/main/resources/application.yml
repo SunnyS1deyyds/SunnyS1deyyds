@@ -17,6 +17,7 @@ dubbo:
   consumer:
     check: false
     retries: 0
+    timeout: 300000
 
 tanhua:
   sms:

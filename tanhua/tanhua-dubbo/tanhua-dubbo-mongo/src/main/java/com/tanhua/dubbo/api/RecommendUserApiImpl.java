@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.List;
+
 @DubboService
 public class RecommendUserApiImpl implements RecommendUserApi {
 
@@ -38,5 +40,17 @@ public class RecommendUserApiImpl implements RecommendUserApi {
         }
 
         return recommendUser;
+    }
+
+    @Override
+    public List<RecommendUser> findRecommendUser(Long toUserId) {
+        //封装查询条件
+        Query query = new Query(Criteria.where("toUserId").is(toUserId));
+
+        //执行查询
+        List<RecommendUser> recommendUserList = mongoTemplate.find(query, RecommendUser.class);
+
+        //返回结果
+        return recommendUserList;
     }
 }

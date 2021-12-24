@@ -33,7 +33,7 @@ public class MongoTest {
     public void testSave() {
         for (int i = 0; i < 10; i++) {
             Person person = new Person();
-            person.setName("张三" + i);
+            person.setName("李四" + i);
             person.setAge(18 + i);
             person.setAddress("武汉分校" + i);
             mongoTemplate.save(person);
