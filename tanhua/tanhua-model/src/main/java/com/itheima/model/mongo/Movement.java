@@ -1,5 +1,6 @@
 package com.itheima.model.mongo;
 
+import com.itheima.model.enums.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,19 @@ public class Movement implements java.io.Serializable {
     private String locationName; //位置名称
     //状态 0：未审（默认），1：通过，2：驳回
     private Integer state = 0;
+
+    private Integer likeCount = 0; //点赞数
+    private Integer commentCount = 0; //评论数
+    private Integer loveCount = 0; //喜欢数
+
+    //根据评论类型，获取对应的互动数量
+    public Integer statisCount(Integer commentType) {
+        if (commentType == CommentType.LIKE.getType()) {
+            return this.likeCount;
+        } else if (commentType == CommentType.COMMENT.getType()) {
+            return this.commentCount;
+        } else {
+            return loveCount;
+        }
+    }
 }

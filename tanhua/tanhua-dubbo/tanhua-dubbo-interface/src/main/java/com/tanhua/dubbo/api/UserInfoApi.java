@@ -18,4 +18,7 @@ public interface UserInfoApi {
 
     //根据用户id和dto条件，分页查询数据
     Page<UserInfo> findPage(List<Long> ids, RecommendUserDto dto);
+
+    //根据用户ids查询用户详情
+    List<UserInfo> findByUserIds(List<Long> ids);
 }

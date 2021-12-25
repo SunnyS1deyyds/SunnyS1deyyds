@@ -61,4 +61,12 @@ public class UserInfoApiImpl implements UserInfoApi {
         //返回结果
         return pages;
     }
+
+    @Override
+    public List<UserInfo> findByUserIds(List<Long> ids) {
+        return userInfoMapper.selectList(
+                Wrappers.lambdaQuery(UserInfo.class)
+                        .in(UserInfo::getId, ids)
+        );
+    }
 }
