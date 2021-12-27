@@ -1,8 +1,10 @@
 package com.itheima.model.vo;
 
+import com.itheima.model.pojo.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 
@@ -22,4 +24,15 @@ public class UserInfoVo implements Serializable {
     private String education; //学历
     private String profession; //行业
     private Integer marriage; //婚姻状态
+
+    public static UserInfoVo init(UserInfo userInfo) {
+        UserInfoVo vo = new UserInfoVo();
+
+        BeanUtils.copyProperties(userInfo, vo);
+        if (userInfo.getAge() != null) {//age必须转为字符串
+            vo.setAge(userInfo.getAge().toString());
+        }
+
+        return vo;
+    }
 }

@@ -69,4 +69,19 @@ public class UserInfoApiImpl implements UserInfoApi {
                         .in(UserInfo::getId, ids)
         );
     }
+
+    @Override
+    public Page<UserInfo> findPage(List<Long> friendIds, Integer page, Integer pagesize, String keyword) {
+        //Page<UserInfo> pages = new Page<>(page, pagesize);
+        //LambdaQueryWrapper<UserInfo> wrapper = Wrappers.lambdaQuery(UserInfo.class);
+        //wrapper.in(UserInfo::getId, friendIds);
+        //wrapper.like(StringUtils.isNotBlank(keyword), UserInfo::getNickname, keyword);
+        //pages= userInfoMapper.selectPage(pages, wrapper);
+        //return pages;
+
+        return userInfoMapper.selectPage(new Page<>(page, pagesize),
+                Wrappers.lambdaQuery(UserInfo.class)
+                        .in(UserInfo::getId, friendIds)
+                        .like(StringUtils.isNotBlank(keyword), UserInfo::getNickname, keyword));
+    }
 }

@@ -2,7 +2,9 @@ package com.tanhua.app.service;
 
 import cn.hutool.core.util.RandomUtil;
 import com.itheima.model.pojo.User;
+import com.tanhua.commons.utils.Constants;
 import com.tanhua.commons.utils.JwtUtils;
+import com.tanhua.config.template.HuanXinTemplate;
 import com.tanhua.config.template.SmsTemplate;
 import com.tanhua.dubbo.api.UserApi;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -21,6 +23,9 @@ public class UserService {
 
     @Autowired
     private SmsTemplate smsTemplate;
+
+    @Autowired
+    private HuanXinTemplate huanXinTemplate;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -74,6 +79,15 @@ public class UserService {
 
             //如果是新用户，设置为true
             isNew = true;
+
+            Boolean aBoolean = huanXinTemplate.createUser(
+                    Constants.HX_USER_PREFIX + user.getId(), Constants.INIT_PASSWORD);
+            //如果环信账号注册成功，保存环信账号信息
+            if (aBoolean) {
+                user.setHxUser(Constants.HX_USER_PREFIX + user.getId());
+                user.setHxPassword(Constants.INIT_PASSWORD);
+                userApi.update(user);
+            }
         }
 
 
