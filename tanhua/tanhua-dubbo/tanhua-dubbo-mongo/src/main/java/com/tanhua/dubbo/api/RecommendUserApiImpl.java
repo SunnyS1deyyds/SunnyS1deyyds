@@ -1,14 +1,19 @@
 package com.tanhua.dubbo.api;
 
 import com.itheima.model.mongo.RecommendUser;
+import com.itheima.model.mongo.UserLike;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @DubboService
 public class RecommendUserApiImpl implements RecommendUserApi {
@@ -71,5 +76,34 @@ public class RecommendUserApiImpl implements RecommendUserApi {
         }
 
         return recommendUser;
+    }
+
+    //根据用户id查询推荐用户，排除喜欢/不喜欢 的用户   最多查询10个用户
+    @Override
+    public List<RecommendUser> queryCardsList(Long userId, int count) {
+        //1 获取当前用户的  喜欢/不喜欢的数据
+        List<UserLike> userLikeList = mongoTemplate.find(new Query(
+                Criteria.where("userId").is(userId)
+        ), UserLike.class);
+
+        //2 喜欢/不喜欢的数据转为   ids  用户的ids
+        List<Long> userLikeIds = userLikeList.stream()
+                .map(UserLike::getLikeUserId).collect(Collectors.toList());
+
+        //3 设置统计的查询条件  查询当前用户的推荐好友  排除喜欢/不喜欢的用户
+        Criteria criteria = Criteria.where("toUserId").is(userId).and("userId").nin(userLikeIds);
+
+        //4 统计条件是   排除喜欢/不喜欢的用户    最多查询10个用户
+        TypedAggregation<?> aggregation = Aggregation.newAggregation(
+                RecommendUser.class,
+                Aggregation.match(criteria),       //统计的条件
+                Aggregation.sample(10)  //统计返回的数据条数,必须设置在最后
+        );
+
+        //5 使用mongoTemplate的统计方法执行查询
+        AggregationResults<RecommendUser> results = mongoTemplate.aggregate(aggregation, RecommendUser.class);
+
+        //返回结果
+        return results.getMappedResults();
     }
 }

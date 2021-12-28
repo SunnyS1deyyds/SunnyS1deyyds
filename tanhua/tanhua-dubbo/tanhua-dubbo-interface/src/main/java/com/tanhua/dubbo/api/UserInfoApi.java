@@ -24,4 +24,7 @@ public interface UserInfoApi {
 
     //根据昵称的关键词 和用户ids 分页查询用户详情
     Page<UserInfo> findPage(List<Long> friendIds, Integer page, Integer pagesize, String keyword);
+
+    //根据用户的ids和性别查询用户详情
+    List<UserInfo> findByUserIds(List<Long> ids, String gender);
 }

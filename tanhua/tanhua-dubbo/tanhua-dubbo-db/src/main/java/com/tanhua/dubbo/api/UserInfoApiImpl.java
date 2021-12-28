@@ -84,4 +84,13 @@ public class UserInfoApiImpl implements UserInfoApi {
                         .in(UserInfo::getId, friendIds)
                         .like(StringUtils.isNotBlank(keyword), UserInfo::getNickname, keyword));
     }
+
+    @Override
+    public List<UserInfo> findByUserIds(List<Long> ids, String gender) {
+        return userInfoMapper.selectList(
+                Wrappers.lambdaQuery(UserInfo.class)
+                        .eq(StringUtils.isNotBlank(gender), UserInfo::getGender, gender)
+                        .in(UserInfo::getId, ids)
+        );
+    }
 }
