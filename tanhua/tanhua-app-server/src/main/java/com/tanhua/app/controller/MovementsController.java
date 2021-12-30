@@ -3,6 +3,7 @@ package com.tanhua.app.controller;
 import com.itheima.model.mongo.Movement;
 import com.itheima.model.vo.MovementsVo;
 import com.itheima.model.vo.PageResult;
+import com.itheima.model.vo.VisitorsVo;
 import com.tanhua.app.service.CommentsService;
 import com.tanhua.app.service.MovementsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/movements")
@@ -68,7 +70,7 @@ public class MovementsController {
     @GetMapping("/recommend")
     public ResponseEntity recommend(@RequestParam(defaultValue = "1") Integer page,
                                     @RequestParam(defaultValue = "10") Integer pagesize) {
-        PageResult pr = movementsService.findRecommendMovements(page,pagesize);
+        PageResult pr = movementsService.findRecommendMovements(page, pagesize);
         return ResponseEntity.ok(pr);
     }
 
@@ -77,6 +79,10 @@ public class MovementsController {
      */
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") String movementId) {
+        if ("visitors".equals(movementId)) {
+            return ResponseEntity.ok(null);
+        }
+
         MovementsVo vo = movementsService.findById(movementId);
         return ResponseEntity.ok(vo);
     }
@@ -116,6 +122,15 @@ public class MovementsController {
     public ResponseEntity unlove(@PathVariable("id") String movementId) {
         Integer likeCount = commentsService.unlove(movementId);
         return ResponseEntity.ok(likeCount);
+    }
+
+    /**
+     * 谁看过我
+     */
+    @GetMapping("visitors")
+    public ResponseEntity queryVisitorsList(){
+        List<VisitorsVo> list = movementsService.queryVisitorsList();
+        return ResponseEntity.ok(list);
     }
 
 }

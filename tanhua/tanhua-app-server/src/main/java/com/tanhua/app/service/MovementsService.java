@@ -2,16 +2,19 @@ package com.tanhua.app.service;
 
 import cn.hutool.core.collection.CollUtil;
 import com.itheima.model.mongo.Movement;
+import com.itheima.model.mongo.Visitors;
 import com.itheima.model.pojo.UserInfo;
 import com.itheima.model.vo.ErrorResult;
 import com.itheima.model.vo.MovementsVo;
 import com.itheima.model.vo.PageResult;
+import com.itheima.model.vo.VisitorsVo;
 import com.tanhua.app.exception.BusinessException;
 import com.tanhua.app.interceptor.UserHolder;
 import com.tanhua.commons.utils.Constants;
 import com.tanhua.config.template.OssTemplate;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.api.UserInfoApi;
+import com.tanhua.dubbo.api.VisitorsApi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class MovementsService {
 
     @DubboReference
     private UserInfoApi userInfoApi;
+
+    @DubboReference
+    private VisitorsApi visitorsApi;
 
     public void pushlishMovement(Movement movement, MultipartFile[] imageContent) throws IOException {
 
@@ -206,5 +212,41 @@ public class MovementsService {
 
         //3 封装vo  返回结果
         return MovementsVo.init(userInfo, movement);
+    }
+
+    //谁看过我   根据查看访客信息的时间  进行查询
+    public List<VisitorsVo> queryVisitorsList() {
+        //1. 从redis中查询访问时间
+        String key = Constants.VISITORS_USER;//hash结构的大key，保存所有的访客查询时间
+        String hashKey = UserHolder.getUserId().toString();
+        //查询访问时间
+        String redisDate = (String) redisTemplate.opsForHash().get(key, hashKey);
+        //转换时间格式
+        Long date = redisDate == null ? null : Long.parseLong(redisDate);
+
+        //2. 使用API查询访客信息
+        List<Visitors> visitorsList = visitorsApi.queryVisitorsList(UserHolder.getUserId(), date, 5);
+
+        //3. 把访客集合中的访客id提取
+        List<Long> ids = visitorsList.stream()
+                .map(Visitors::getVisitorUserId).collect(Collectors.toList());
+
+        //4. 根据访客的ids   查询访客的用户详情
+        Map<Long, UserInfo> map = userInfoApi.findByUserIds(ids).stream()
+                .collect(Collectors.toMap(UserInfo::getId, Function.identity()));
+
+
+        //5. 封装vo
+        List<VisitorsVo> vos = new ArrayList<>();
+        for (Visitors visitors : visitorsList) {
+            UserInfo userInfo = map.get(visitors.getVisitorUserId());
+            if (userInfo != null) {
+                VisitorsVo vo = VisitorsVo.init(userInfo, visitors);
+                vos.add(vo);
+            }
+        }
+
+        //返回结果
+        return vos;
     }
 }

@@ -1,12 +1,14 @@
 package com.tanhua.app.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.model.dto.RecommendUserDto;
 import com.itheima.model.mongo.RecommendUser;
 import com.itheima.model.mongo.UserLocation;
+import com.itheima.model.mongo.Visitors;
 import com.itheima.model.pojo.Question;
 import com.itheima.model.pojo.User;
 import com.itheima.model.pojo.UserInfo;
@@ -26,10 +28,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -62,6 +61,9 @@ public class TanhuaService {
 
     @DubboReference
     private UserLocationApi userLocationApi;
+
+    @DubboReference
+    private VisitorsApi visitorsApi;
 
     public TodayBest todayBest() {
 
@@ -126,6 +128,20 @@ public class TanhuaService {
 
         //2 根据用户id和推荐好友(佳人)id查询推荐用户信息
         RecommendUser user = recommendUserApi.findRecommendUser(UserHolder.getUserId(), userId);
+
+        //保存访客的信息
+        //构建访客对象
+        Visitors visitors = new Visitors();
+        visitors.setUserId(userId);//谁被访问了
+        visitors.setVisitorUserId(UserHolder.getUserId());//谁在进行访问
+        visitors.setFrom("首页");
+        visitors.setDate(System.currentTimeMillis());
+        visitors.setVisitDate(DateUtil.format(new Date(), "yyyyMMdd"));
+        visitors.setScore(user.getScore());
+
+        //访客存储
+        visitorsApi.save(visitors);
+
 
         //3 封装vo,并返回结果
         return TodayBest.init(userInfo, user);
@@ -294,24 +310,24 @@ public class TanhuaService {
         return vos;
     }
 
-    public static void main(String[] args) {
-        //Integer a = 128;
-        //Integer b = 128;
-        //
-        //Long aa = 128l;
-        //Long bb = 128l;
-        //
-        //System.out.println(a == b);
-        //System.out.println(aa == bb);
-
-
-        long a = 10000l;
-        long b = 10000l;
-
-        System.out.println(a*b*10000l);
-
-        long c = 10000*10000*10000;
-        System.out.println(c);
-
-    }
+    //public static void main(String[] args) {
+    //    //Integer a = 128;
+    //    //Integer b = 128;
+    //    //
+    //    //Long aa = 128l;
+    //    //Long bb = 128l;
+    //    //
+    //    //System.out.println(a == b);
+    //    //System.out.println(aa == bb);
+    //
+    //
+    //    long a = 10000l;
+    //    long b = 10000l;
+    //
+    //    System.out.println(a*b*10000l);
+    //
+    //    long c = 10000*10000*10000;
+    //    System.out.println(c);
+    //
+    //}
 }

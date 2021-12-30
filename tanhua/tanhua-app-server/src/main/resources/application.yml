@@ -10,6 +10,10 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.200.188:8848
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
 
 dubbo:
   registry:
@@ -43,3 +47,15 @@ tanhua:
   default:
     recommend:
       users: 2,3,8,10,18,20,24,29,27,32,36,37,56,64,75,88
+
+# 分布式文件系统FDFS配置
+fdfs:
+  so-timeout: 1500
+  connect-timeout: 600
+  #缩略图生成参数
+  thumb-image:
+    width: 150
+    height: 150
+  #TrackerList参数,支持多个
+  tracker-list: 192.168.200.188:22122
+  web-server-url: http://192.168.200.188/

@@ -10,11 +10,12 @@
     <packaging>pom</packaging>
 
     <modules>
-<!--        <module>dubbo-demo</module>-->
-<!--        <module>cloud-dubbo-demo</module>-->
+        <!--        <module>dubbo-demo</module>-->
+        <!--        <module>cloud-dubbo-demo</module>-->
         <module>tanhua</module>
-<!--        <module>tanhua-mongo-demo</module>-->
-<!--        <module>tanhua-mongo-geo</module>-->
+        <!--        <module>tanhua-mongo-demo</module>-->
+        <!--        <module>tanhua-mongo-geo</module>-->
+<!--        <module>spring-cache-demo</module>-->
     </modules>
 
     <properties>
