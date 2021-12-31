@@ -1,0 +1,39 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: tanhua-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.200.188:8848
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders: "*"
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - OPTION
+      #动态路由的配置，CV即可   要求必须能看懂，会改
+      routes:
+        - id: tanhua-app-server
+          uri: lb://tanhua-app-server
+          predicates:
+            - Path=/app/**
+          filters:
+            - StripPrefix=1
+        - id: tanhua-admin
+          uri: lb://tanhua-admin
+          predicates:
+            - Path=/admin/**
+          filters:
+            - StripPrefix=1
+#自定义配置，定义不需要校验token的连接
+gateway:
+  excludedUrls: /user/login,/user/loginVerification,/system/users/verification,/system/users/login

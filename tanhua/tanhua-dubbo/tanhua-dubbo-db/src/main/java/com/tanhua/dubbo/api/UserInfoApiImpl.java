@@ -93,4 +93,11 @@ public class UserInfoApiImpl implements UserInfoApi {
                         .in(UserInfo::getId, ids)
         );
     }
+
+    //分页查询所有的用户数据
+    @Override
+    public Page<UserInfo> findPage(Integer page, Integer pagesize) {
+        Page<UserInfo> pages = new Page<>(page, pagesize);
+        return userInfoMapper.selectPage(pages, null);
+    }
 }

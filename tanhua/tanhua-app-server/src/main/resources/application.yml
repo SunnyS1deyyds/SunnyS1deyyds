@@ -22,6 +22,9 @@ dubbo:
     check: false
     retries: 0
     timeout: 300000
+  protocol:
+    name: dubbo
+    port: 20888
 
 tanhua:
   sms:

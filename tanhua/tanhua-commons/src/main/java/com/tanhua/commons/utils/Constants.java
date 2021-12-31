@@ -6,6 +6,10 @@ public class Constants {
     //手机APP短信验证码CHECK_CODE_
     public static final String SMS_CODE = "CHECK_CODE_";
 
+
+    //图片验证码key的前缀
+    public static final String CAP_CODE = "CAP_CODE_";
+
     //冻结用户状态KEY
     public static final String USER_FREEZE = "USER_FREEZE_";
 

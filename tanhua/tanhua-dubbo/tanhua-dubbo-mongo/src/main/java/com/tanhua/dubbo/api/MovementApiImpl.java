@@ -122,4 +122,30 @@ public class MovementApiImpl implements MovementApi {
         //new ObjectId(movementId)
         return mongoTemplate.findById(new ObjectId(movementId), Movement.class);
     }
+
+    //根据用户id和状态分页查询动态数据
+    @Override
+    public PageResult findAllMovements(Long uid, Integer state, Integer page, Integer pagesize) {
+        //1 封装查询条件
+        Query query = Query.query(Criteria.where("userId").is(uid));
+
+        //判断状态是否为空
+        if (state != null) {
+            query.addCriteria(Criteria.where("state").is(state));
+        }
+
+        //2 查询数据总条数
+        long count = mongoTemplate.count(query, Movement.class);
+
+        //3 设置分页参数
+        query.skip((page - 1) * pagesize)
+                .limit(pagesize)
+                .with(Sort.by(Sort.Order.desc("created")));
+
+        //4 查询当前页的结果集List
+        List<Movement> list = mongoTemplate.find(query, Movement.class);
+
+        //构建返回对象，返回数据
+        return new PageResult(page, pagesize, (int) count, list);
+    }
 }

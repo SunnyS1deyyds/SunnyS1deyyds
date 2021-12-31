@@ -24,4 +24,7 @@ public interface MovementApi {
 
     //根据动态id  查询动态数据
     Movement findById(String movementId);
+
+    //根据用户id和状态分页查询动态数据
+    PageResult findAllMovements(Long uid, Integer state, Integer page, Integer pagesize);
 }

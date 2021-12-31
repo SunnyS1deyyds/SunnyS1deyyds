@@ -13,6 +13,8 @@
         <module>tanhua-commons</module>
         <module>tanhua-dubbo</module>
         <module>tanhua-app-server</module>
+        <module>tanhua-gateway</module>
+        <module>tanhua-admin</module>
     </modules>
 
     <packaging>pom</packaging>

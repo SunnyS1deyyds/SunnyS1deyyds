@@ -27,4 +27,7 @@ public interface UserInfoApi {
 
     //根据用户的ids和性别查询用户详情
     List<UserInfo> findByUserIds(List<Long> ids, String gender);
+
+    //分页查询所有的用户数据
+    Page<UserInfo> findPage(Integer page, Integer pagesize);
 }
