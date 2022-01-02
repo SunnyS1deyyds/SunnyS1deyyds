@@ -6,6 +6,9 @@ spring:
   redis: #redis配置
     port: 6379
     host: 192.168.200.188
+  rabbitmq:
+    host: 192.168.200.188
+    port: 5672
   cloud: #nacos配置
     nacos:
       discovery:
@@ -38,6 +41,11 @@ tanhua:
     accessKeySecret: 1OMqoyjTEKaeMawX88f1ErJ8doI5I4
     bucket: xuzy-tanhua-test
     url: https://xuzy-tanhua-test.oss-cn-beijing.aliyuncs.com/
+  green:
+    enable: true
+    accessKeyId: LTAI5tFz3fQcYuD3SQbsUY1G
+    accessKeySecret: 1OMqoyjTEKaeMawX88f1ErJ8doI5I4
+    scenes: porn,terrorism #色情，暴力
   aip:
     appId: 25384207
     apiKey: 64anEHUyNwtY9dwr9tpQFDem

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -31,7 +32,7 @@ public class SystemController {
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(300, 100);
 
         //2 获取验证码并保存到redis当中
-        redisTemplate.opsForValue().set(Constants.CAP_CODE + uuid, lineCaptcha.getCode());
+        redisTemplate.opsForValue().set(Constants.CAP_CODE + uuid, lineCaptcha.getCode(), Duration.ofMinutes(5));
 
         //3 输出验证码图片
         lineCaptcha.write(response.getOutputStream());

@@ -1,25 +1,34 @@
 package com.tanhua.admin.service;
 
+import cn.hutool.core.map.MapUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.model.mongo.Movement;
 import com.itheima.model.mongo.Video;
 import com.itheima.model.pojo.UserInfo;
-import com.itheima.model.vo.MovementsVo;
-import com.itheima.model.vo.PageResult;
-import com.itheima.model.vo.UserInfoVo;
-import com.itheima.model.vo.VideoVo;
+import com.itheima.model.vo.*;
+import com.tanhua.admin.exception.BusinessException;
+import com.tanhua.commons.utils.Constants;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.api.UserInfoApi;
 import com.tanhua.dubbo.api.VideoApi;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ManagerService {
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @DubboReference
     private UserInfoApi userInfoApi;
@@ -34,20 +43,26 @@ public class ManagerService {
         //1 分页查询所有的用户
         Page<UserInfo> pages = userInfoApi.findPage(page, pagesize);
 
-        //2 构建vos
-        List<UserInfoVo> vos = new ArrayList<>();
-        for (UserInfo userInfo : pages.getRecords()) {
-            UserInfoVo vo = UserInfoVo.init(userInfo);
-            vos.add(vo);
+        //2 获取用户详情，设置用户状态
+        List<UserInfo> list = pages.getRecords();
+        for (UserInfo userInfo : list) {
+            if (redisTemplate.hasKey(Constants.FREEZE_USER + userInfo.getId())) {
+                userInfo.setUserStatus("2");
+            }
         }
 
         //3 返回结果
-        return new PageResult(page, pagesize, (int) pages.getTotal(), vos);
+        return new PageResult(page, pagesize, (int) pages.getTotal(), list);
     }
 
     //根据id查询用户详情
     public UserInfo findUserById(Long userId) {
-        return userInfoApi.findById(userId);
+        UserInfo userInfo = userInfoApi.findById(userId);
+        if (redisTemplate.hasKey(Constants.FREEZE_USER + userId)) {
+            userInfo.setUserStatus("2");
+        }
+
+        return userInfo;
     }
 
     //根据用户id，分页查询发布的视频
@@ -96,5 +111,54 @@ public class ManagerService {
 
         //返回结果
         return pageResult;
+    }
+
+    //用户冻结
+    public Map userFreeze(Map params) {
+        //1 获取请求参数   id    冻结时间
+        if (params.get("userId") == null || params.get("freezingTime") == null) {
+            throw new BusinessException("参数不能为空");
+        }
+
+        long id = Long.parseLong(params.get("userId").toString());
+        String freezingTime = params.get("freezingTime").toString();
+
+        //2 计算冻结时间(redis数据的存活时间)
+        //freezingTime(冻结时间):       1-冻结3天， 2-冻结7天，3-永久冻结
+        int day = 0;
+        if ("1".equals(freezingTime)) {
+            day = 3;
+        }
+        if ("2".equals(freezingTime)) {
+            day = 7;
+        }
+        if ("3".equals(freezingTime)) {
+            day = -1;
+        }
+
+
+        //3 保存数据到redis中
+        String value = JSON.toJSONString(params);
+        //redisTemplate.opsForValue().set(Constants.FREEZE_USER +id,value,day, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(Constants.FREEZE_USER + id, value, Duration.ofDays(day));
+
+        //封装返回数据
+        return MapUtil.builder("message", "用户冻结成功").build();
+    }
+
+    //用户解冻
+    public Map userUnfreeze(Map params) {
+        //1 获取请求参数   id    冻结时间
+        if (params.get("userId") == null) {
+            throw new BusinessException("参数不能为空");
+        }
+
+        long id = Long.parseLong(params.get("userId").toString());
+
+        //2 解冻操作
+        redisTemplate.delete(Constants.FREEZE_USER + id);
+
+        //封装返回数据
+        return MapUtil.builder("message", "用户解冻成功").build();
     }
 }

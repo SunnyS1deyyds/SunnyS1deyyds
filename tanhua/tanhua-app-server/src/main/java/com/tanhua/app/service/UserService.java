@@ -22,6 +22,12 @@ import java.util.concurrent.TimeUnit;
 public class UserService {
 
     @Autowired
+    private MqMessageService mqMessageService;
+
+    @Autowired
+    private UserFreezeService userFreezeService;
+
+    @Autowired
     private SmsTemplate smsTemplate;
 
     @Autowired
@@ -38,6 +44,14 @@ public class UserService {
 
 
     public void login(String mobile) {
+        //登录发送手机验证码之前，判断该用户是否被 登录冻结
+        //根据手机号查询用户
+        User user = userApi.findByMobile(mobile);
+        //判断是否被冻结
+        if (user != null) {
+            userFreezeService.checkUserFreeze(user.getId(), "1");
+        }
+
         ////1. 生成6位数字验证码
         //String code = RandomUtil.randomNumbers(6);
         //
@@ -68,7 +82,9 @@ public class UserService {
         boolean isNew = false;//默认不是新用户
 
         //3 判断用户是否存在，若不存在添加新用户
+        String type = "0101";//登录操作日志类型
         if (user == null) {
+            type = "0102";//注册操作日志类型
             user = new User();
             user.setMobile(mobile);
             user.setPassword(DigestUtils.md5Hex("123456"));
@@ -104,6 +120,9 @@ public class UserService {
         Map reMap = new HashMap();
         reMap.put("isNew", isNew);
         reMap.put("token", token);
+
+        //发送消息   注册消息   登录消息
+        mqMessageService.sendLogMessage(user.getId(), type, "user", null);
 
         return reMap;
     }

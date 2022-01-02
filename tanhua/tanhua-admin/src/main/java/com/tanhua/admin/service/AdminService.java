@@ -52,6 +52,7 @@ public class AdminService {
         if (!verificationCode.equals(redisCode)) {
             throw new BusinessException("验证码错误");
         }
+        redisTemplate.delete(Constants.CAP_CODE + uuid);
 
         //5 根据用户名查询管理员信息
         Admin admin = adminMapper.selectOne(Wrappers.lambdaQuery(Admin.class).eq(Admin::getUsername, username));

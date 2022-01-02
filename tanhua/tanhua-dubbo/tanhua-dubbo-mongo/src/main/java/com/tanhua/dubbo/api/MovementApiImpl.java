@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,7 @@ public class MovementApiImpl implements MovementApi {
     private IdWorker idWorker;
 
     @Override
-    public void pushlishMovement(Movement movement) {
+    public String pushlishMovement(Movement movement) {
         //保存动态数据
         movement.setPid(idWorker.getNextId("movement"));
         mongoTemplate.save(movement);
@@ -54,6 +55,8 @@ public class MovementApiImpl implements MovementApi {
         //    mongoTemplate.save(timeLine);
         //}
         movementTimeLineService.saveMovementTimeLine(movement.getUserId(), movement.getId());
+
+        return movement.getId().toHexString();
     }
 
     //根据用户id分页查询用户动态   根据发布时间倒序排序
@@ -147,5 +150,13 @@ public class MovementApiImpl implements MovementApi {
 
         //构建返回对象，返回数据
         return new PageResult(page, pagesize, (int) count, list);
+    }
+
+    @Override
+    public void updateState(Movement movement) {
+        mongoTemplate.updateFirst(
+                Query.query(Criteria.where("id").is(movement.getId())),
+                Update.update("state", movement.getState()),
+                Movement.class);
     }
 }

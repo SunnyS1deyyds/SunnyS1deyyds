@@ -53,4 +53,16 @@ public class ErrorResult {
     public static ErrorResult disloveError() {
         return ErrorResult.builder().errCode("000009").errMessage("用户未喜欢").build();
     }
+
+    public static ErrorResult freezeLoginError() {
+        return ErrorResult.builder().errCode("000010").errMessage("用户登录被冻结了").build();
+    }
+
+    public static ErrorResult freezeSpeakError() {
+        return ErrorResult.builder().errCode("000011").errMessage("用户发言被冻结了").build();
+    }
+
+    public static ErrorResult freezeMovementError() {
+        return ErrorResult.builder().errCode("000012").errMessage("用户发布动态被冻结了").build();
+    }
 }

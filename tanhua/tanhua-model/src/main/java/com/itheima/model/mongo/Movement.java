@@ -25,7 +25,7 @@ public class Movement implements java.io.Serializable {
     private String longitude; //经度
     private String latitude; //纬度
     private String locationName; //位置名称
-    //状态 0：未审（默认），1：通过，2：驳回
+    //状态 0：未审（默认），1：通过，2：驳回 , 3:需要人工审核
     private Integer state = 0;
 
     private Integer likeCount = 0; //点赞数

@@ -8,7 +8,7 @@ import java.util.List;
 public interface MovementApi {
 
     //发布动态
-    void pushlishMovement(Movement movement);
+    String pushlishMovement(Movement movement);
 
     //根据用户id分页查询用户动态   根据发布时间倒序排序
     PageResult findPageByUserId(Long userId, Integer page, Integer pagesize);
@@ -27,4 +27,7 @@ public interface MovementApi {
 
     //根据用户id和状态分页查询动态数据
     PageResult findAllMovements(Long uid, Integer state, Integer page, Integer pagesize);
+
+    //更新审核状态
+    void updateState(Movement movement);
 }

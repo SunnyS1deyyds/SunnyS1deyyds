@@ -1,13 +1,8 @@
 package com.tanhua.config;
 
-import com.tanhua.config.properties.AipProperties;
-import com.tanhua.config.properties.HuanXinProperties;
-import com.tanhua.config.properties.OssProperties;
-import com.tanhua.config.properties.SmsProperties;
-import com.tanhua.config.template.AipTemplate;
-import com.tanhua.config.template.HuanXinTemplate;
-import com.tanhua.config.template.OssTemplate;
-import com.tanhua.config.template.SmsTemplate;
+import com.tanhua.config.properties.*;
+import com.tanhua.config.template.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -15,7 +10,8 @@ import org.springframework.context.annotation.Bean;
         SmsProperties.class,
         OssProperties.class,
         AipProperties.class,
-        HuanXinProperties.class
+        HuanXinProperties.class,
+        GreenProperties.class
 })
 public class TanhuaAutoConfiguration {
 
@@ -40,4 +36,9 @@ public class TanhuaAutoConfiguration {
         return new HuanXinTemplate(properties);
     }
 
+    @Bean
+    @ConditionalOnProperty(prefix = "tanhua.green",value = "enable", havingValue = "true")
+    public GreenTemplate aliyunGreenTemplate(GreenProperties properties) {
+        return new GreenTemplate(properties);
+    }
 }

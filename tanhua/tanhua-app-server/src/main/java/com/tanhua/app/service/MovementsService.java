@@ -24,11 +24,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class MovementsService {
+
+    @Autowired
+    private MqMessageService mqMessageService;
 
     @Autowired
     private OssTemplate ossTemplate;
@@ -68,8 +72,14 @@ public class MovementsService {
         movement.setCreated(new Date().getTime());
         movement.setUserId(userId);
 
-        movementApi.pushlishMovement(movement);
 
+        String movementId = movementApi.pushlishMovement(movement);
+
+        //发送发布动态的操作日志
+        mqMessageService.sendLogMessage(movement.getUserId(), "0201", "movement", movementId);
+
+        //发送动态审核的消息
+        mqMessageService.sendAudiMessage(movementId);
     }
 
     public PageResult all(Long userId, Integer page, Integer pagesize) {
