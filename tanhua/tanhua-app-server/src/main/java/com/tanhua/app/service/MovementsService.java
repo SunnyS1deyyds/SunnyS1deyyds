@@ -76,7 +76,7 @@ public class MovementsService {
         String movementId = movementApi.pushlishMovement(movement);
 
         //发送发布动态的操作日志
-        mqMessageService.sendLogMessage(movement.getUserId(), "0201", "movement", movementId);
+        mqMessageService.sendLogMessage(UserHolder.getUserId(), "0201", "movement", movementId);
 
         //发送动态审核的消息
         mqMessageService.sendAudiMessage(movementId);

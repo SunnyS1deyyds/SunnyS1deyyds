@@ -45,6 +45,9 @@ public class SmallVideosService {
     @Autowired
     private OssTemplate ossTemplate;
 
+    @Autowired
+    private MqMessageService mqMessageService;
+
 
     @DubboReference
     private VideoApi videoApi;
@@ -76,6 +79,9 @@ public class SmallVideosService {
 
         //4 调用api进行保存
         String id = videoApi.save(video);
+
+        //发送用户的操作日志消息
+        mqMessageService.sendLogMessage(UserHolder.getUserId(), "0301", "video", id);
     }
 
     //分页 查询小视频列表

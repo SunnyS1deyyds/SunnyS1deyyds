@@ -15,7 +15,8 @@
         <module>tanhua</module>
         <!--        <module>tanhua-mongo-demo</module>-->
         <!--        <module>tanhua-mongo-geo</module>-->
-<!--        <module>spring-cache-demo</module>-->
+        <!--        <module>spring-cache-demo</module>-->
+        <!--        <module>tanhua-aop-test</module>-->
     </modules>
 
     <properties>
