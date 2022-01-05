@@ -27,6 +27,7 @@ public class BaiduController {
         Double latitude = Double.valueOf(param.get("latitude").toString());
         String address = param.get("addrStr").toString();
         this.baiduService.updateLocation(longitude, latitude,address);
+        //
         return ResponseEntity.ok(null);
     }
 }
